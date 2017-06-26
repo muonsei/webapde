@@ -9,7 +9,6 @@
             <ul id=navLinks>
                 <li><a id="homing" href="index.html">HOME</a></li>
                 <li><a id="photing"href="photos.html">PHOTOS</a></li>
-                <li><a id="albuming"href="album.html">ALBUMS</a></li>
             </ul>
         </nav>
         <div id="middle">
@@ -53,13 +52,13 @@
                     console.log(user);
                     var profile = $('<div class = "posts"><h1>' + user.username + '</h1>' 
                                + '<h2>' + user.name + '</h2>'
-                               + '<h3>Email Address</h3>' + '<p>' + user.email + '</p>'
-                               + '<h3>Address</h3>' + '<p>' + user.address.street + ' ' 
+                               + '<h3><span>Email Address</span></h3>' + '<p>' + user.email + '</p>'
+                               + '<h3><span>Address</span></h3>' + '<p>' + user.address.street + ' ' 
                                + user.address.suite + ' ' + user.address.city + ' '
                                + user.address.zipcode
-                               + '<h3>Phone</h3>' + '</p>' + user.phone
-                               + '<h3>Website</h3>' + '</p>' + user.website
-                               + '<h3>Company</h3>' + '<h4>' + user.company.name + '</h4><p>'
+                               + '<h3><span>Phone</span></h3>' + '</p>' + user.phone
+                               + '<h3><span>Website</span></h3>' + '</p>' + user.website
+                               + '<h3><span>Company</span></h3>' + '<h4>' + user.company.name + '</h4><p>'
                                + user.company.catchPhrase + '</p><p>' + user.company.bs + '</p></div>');
                 
                     $("#profile").html(profile);
@@ -104,7 +103,7 @@
                                     $.getJSON(randomPicURL)
                                     .done(function(randomPic) {
                                         console.log(randomPic[0]);
-                                        var album = $('<div><a href="album.html?id=' + currentAlbum.id + '"><img src="' + randomPic[0].thumbnailUrl + '.png"></img><p class="albumTitle">' + currentAlbum.title + '</p></a></div>');
+                                        var album = $('<div class="galleryItem"><a href="album.html?id=' + currentAlbum.id + '"><img src="' + randomPic[0].thumbnailUrl + '.png"></img><p class="albumTitle">' + currentAlbum.title + '</p></a></div>');
                                         $("#gallery").append(album);                                        
                                     });
                                     j+=1;

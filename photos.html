@@ -115,11 +115,18 @@
                             for(var j = 0; j < totalLength; j++) {
                                     
                                 if(compare == obj[j].thumbnailUrl){
-                                    var newPost = obj[j].url;
-                                    var full = $("<img src=" + newPost + ">");
-
-                                    full.addClass("content")
-                                    $(".modal-content").html(full);
+                                    var newPost = obj[j];
+                                    $.getJSON("https://jsonplaceholder.typicode.com/albums?id=" + obj[j].albumId)
+                                    .done(function(album) {
+                                        $.getJSON("https://jsonplaceholder.typicode.com/users?id=" + album[0].userId)
+                                        .done(function(user) {
+                                            var profileLink = "profile.html?id=" + user[0].id;
+                                            var albumLink = "album.html?id=" + album[0].id;
+                                            var full = $("<img src=" + newPost.url + "><h4>" + newPost.title + '</h4><p>Uploaded by <a href="' + profileLink + '">' + user[0].username + '</a> to album <a href="' + albumLink + '">' + album[0].title + "</a></p>");
+                                            full.addClass("content")
+                                            $(".modal-content").html(full);    
+                                        });
+                                    });
                                 }
                             }
                         });
