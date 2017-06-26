@@ -77,7 +77,7 @@
                                 $.getJSON(randomPicURL) // This returns an array of objects?
                                 .done(function(randomPic) {
                                     console.log(randomPic[0]); // Log the 1st object (only object)
-                                    var album = $('<div><a href="album.html?id=' + currentAlbum.id + '"><img src="' + randomPic[0].thumbnailUrl + '.png"></img><p class="albumTitle">' + currentAlbum.title + '</p></a></div>');
+                                    var album = $('<div class="galleryItem"><a href="album.html?id=' + currentAlbum.id + '"><img src="' + randomPic[0].thumbnailUrl + '.png"></img><p class="albumTitle">' + currentAlbum.title + '</p></a></div>');
                                     // Ex.: <div><img src="http://placehold.it/150/d32776.png"></img><p class="albumTitle">non esse culpa molestiae omnis sed optio</p></div>
                                     $("#gallery").append(album);
                                 });
