@@ -89,8 +89,10 @@
                         $("#moreAlbums").click(function() {
                             if (length < albums_by_user.length - 1)
                                 length+=2;
-                            else
+                            else {
+                                length+=(albums_by_user.length - length + 1);
                                 $("#moreAlbums").hide();
+                            }
                             for (; j < length;) {
                                 (function() {
                                     if (j == albums_by_user.length - 1)
