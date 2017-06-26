@@ -1,0 +1,157 @@
+<html>
+    <head>
+        <title>Albums | stumblr</title>
+        <link rel="stylesheet" type="text/css" href="albumStyle.css">
+    </head>
+
+    <body>
+        <nav>
+            <ul id=navLinks>
+                <li><a href="index.html" id="homing">HOME</a></li>
+                <li><a href="photos.html">PHOTOS</a></li>
+            </ul>
+        </nav>
+        <div id="middle">
+            <div id="gallery">
+            </div>
+            <button id="more">Load More...</button>
+        </div>
+        
+        <div id="myModal" class="modal">
+
+            <div class="modal-content">
+                <span class="close">&times;</span>
+            </div>
+        </div>
+            
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script>
+            function getUrlVars() {
+                var vars = [], hash;
+                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                for(var i = 0; i < hashes.length; i++) {
+                    hash = hashes[i].split('=');
+                    vars.push(hash[0]);
+                    vars[hash[0]] = hash[1];
+                }
+                return vars;
+            }
+            
+            $(document).ready(function() {
+                var id = getUrlVars().id;
+                var albumTitle;
+                $.getJSON("https://jsonplaceholder.typicode.com/albums?id=" + id)
+                .done(function(obj) {
+                    albumTitle = obj[0].title;
+                    var pageTitle = $("<h1>" + albumTitle + "</h1>");
+                    $("#gallery").prepend(pageTitle);
+                });
+                $.getJSON("https://jsonplaceholder.typicode.com/photos?albumId=" + id)
+                .done(function(obj) {
+                    console.log(obj);
+                    var length = 15;
+                    for (var i = 1; i <= length; i++) {
+                        var currentPhoto = obj[i - 1];
+                        var photo = $("<img src=" + currentPhoto.thumbnailUrl + "></img>");
+                        photo.addClass("galleryElement");
+                        $("#gallery").append(photo);    
+                    }
+                    
+                    $(".galleryElement").click(function(){
+                            $("#myModal").css("display", "block");
+
+                            var compare = $(this).attr("src");
+                        
+                            $.get("https://jsonplaceholder.typicode.com/photos", function(obj) {
+                            for(var j = 0; j < obj.length; j++) {
+                                    
+                                if(compare == obj[j].thumbnailUrl){
+                                    var newPost = obj[j];
+                                    $.getJSON("https://jsonplaceholder.typicode.com/albums?id=" + obj[j].albumId)
+                                    .done(function(album) {
+                                        $.getJSON("https://jsonplaceholder.typicode.com/users?id=" + album[0].userId)
+                                        .done(function(user) {
+                                            var profileLink = "profile.html?id=" + user[0].id;
+                                            var albumLink = "album.html?id=" + album[0].id;
+                                            var full = $("<img src=" + newPost.url + "><h4>" + newPost.title + '</h4><p>Uploaded by <a href="' + profileLink + '">' + user[0].username + '</a> to album <a href="' + albumLink + '">' + album[0].title + "</a></p>");
+                                            full.addClass("content")
+                                            $(".modal-content").html(full);    
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                        
+                        });
+
+                        $(".close").click(function(){
+                             $("#myModal").css("display", "none");
+                        });
+
+                        $("#myModal").click(function(event){
+                            $("#myModal").css("display", "none");
+                        });
+
+                    var j = length;
+                    $("#more").click(function() {
+                        if (obj.length - length >= 15) {
+                            length+=15;
+                        }
+                        else {
+                            $("#more").hide();
+                            length+=(obj.length-length);
+                        }
+                        for (; j < length; j++) {
+                            if (j == obj.length - 1)
+                                $("#more").hide();
+                            var currentPhoto = obj[j - 1];
+                            var photo = $("<img src=" + currentPhoto.thumbnailUrl + "></img>");
+                            photo.addClass("galleryElement");
+                            $("#gallery").append(photo);
+                        }
+                        
+                         $(".galleryElement").click(function(){
+                            $("#myModal").css("display", "block");
+
+                            var compare = $(this).attr("src");
+                        
+                            $.get("https://jsonplaceholder.typicode.com/photos", function(obj) {
+                            for(var j = 0; j < obj.length; j++) {
+                                    
+                                if(compare == obj[j].thumbnailUrl){
+                                    var newPost = obj[j];
+                                    $.getJSON("https://jsonplaceholder.typicode.com/albums?id=" + obj[j].albumId)
+                                    .done(function(album) {
+                                        $.getJSON("https://jsonplaceholder.typicode.com/users?id=" + album[0].userId)
+                                        .done(function(user) {
+                                            var profileLink = "profile.html?id=" + user[0].id;
+                                            var albumLink = "album.html?id=" + album[0].id;
+                                            var full = $("<img src=" + newPost.url + "><h4>" + newPost.title + '</h4><p>Uploaded by <a href="' + profileLink + '">' + user[0].username + '</a> to album <a href="' + albumLink + '">' + album[0].title + "</a></p>");
+                                            full.addClass("content")
+                                            $(".modal-content").html(full);    
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                        
+                        });
+
+                         $(".close").click(function(){
+                             $("#myModal").css("display", "none");
+                        });
+
+                        $("#myModal").click(function(event){
+                            $("#myModal").css("display", "none");
+                        });
+                    });
+        
+                })
+                .fail(function() {
+                    var errorMessage = $("<div><p>Sorry! We could not load the data at the moment.</p></div>");
+                    $("#posts").html(errorMessage);
+                });
+            });
+        </script>
+    </body>
+</html>

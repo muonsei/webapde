@@ -1,0 +1,148 @@
+<html>
+    <head>
+        <title>Photos | stumblr</title>
+        <link rel="stylesheet" type="text/css" href="photoStyle.css">
+    </head>
+
+    <body>
+        <nav>
+            <ul id=navLinks>
+                <li><a href="index.html" id="homing">HOME</a></li>
+                <li><a href="photos.html">PHOTOS</a></li>
+            </ul>
+        </nav>
+        <div id="middle">
+            <div id="gallery">
+            <h1>All Photos</h1>
+            </div>
+            <button id="more">Load More...</button>
+        </div>
+        
+        <div id="myModal" class="modal">
+
+          <div class="modal-content">
+            <span class="close">&times;</span>
+          </div>
+            
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script>
+        var start = 0;
+        var less = 4985;
+        $(document).ready(function() {
+            
+            if(start === 0){
+                $.getJSON("https://jsonplaceholder.typicode.com/photos")
+                .done(function(obj) {
+                    var totalLength = obj.length-less;
+                    
+                    for(var j = start; j < totalLength; j++) {
+                        var post = obj[j].thumbnailUrl;
+                        var imgs = $("<img src=" + post + ">");
+
+                        imgs.addClass("galleryElement");
+                        $("#gallery").append(imgs);
+                        
+                    }
+                    
+                    $(".galleryElement").click(function(){
+                        $("#myModal").css("display", "block");
+                            
+                        var compare = $(this).attr("src");
+                    
+                        $.get("https://jsonplaceholder.typicode.com/photos", function(obj) {
+                            for(var j = 0; j < totalLength; j++) {
+                                    
+                                if(compare == obj[j].thumbnailUrl){
+                                    var newPost = obj[j];
+                                    $.getJSON("https://jsonplaceholder.typicode.com/albums?id=" + obj[j].albumId)
+                                    .done(function(album) {
+                                        $.getJSON("https://jsonplaceholder.typicode.com/users?id=" + album[0].userId)
+                                        .done(function(user) {
+                                            var profileLink = "profile.html?id=" + user[0].id;
+                                            var albumLink = "album.html?id=" + album[0].id;
+                                            var full = $("<img src=" + newPost.url + "><h4>" + newPost.title + '</h4><p>Uploaded by <a href="' + profileLink + '">' + user[0].username + '</a> to album <a href="' + albumLink + '">' + album[0].title + "</a></p>");
+                                            full.addClass("content")
+                                            $(".modal-content").html(full);    
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                        
+                    });
+
+                    $(".close").click(function(){
+                         $("#myModal").css("display", "none");
+                    });
+
+                    $("#myModal").click(function(event){
+                        $("#myModal").css("display", "none");
+                    });
+                    
+                    
+                    console.log(totalLength);
+                    start = start + 15;
+                    less = less - 15;
+                })
+                .fail(function() {
+                   var errorMessage = $("<div><p>Sorry! We could not load the data at the moment.</p></div>");
+                   $("#gallery").html(errorMessage);
+               });
+            }
+            
+            
+            $("#more").click(function(){
+                $.get("https://jsonplaceholder.typicode.com/photos", function(obj) {
+                    var totalLength = obj.length-less;
+                    
+                    for(var j = start; j < totalLength; j++) {
+                        var newDiv = $("<div>");
+                        var post = obj[j].thumbnailUrl;
+                        var imgs = $("<img src=" + post + ">");
+
+                        imgs.addClass("galleryElement");
+                        $("#gallery").append(imgs);
+                        
+                    }
+                    
+                    $(".galleryElement").click(function(){
+                        $("#myModal").css("display", "block");
+                        
+                        var compare = $(this).attr("src");
+                    
+                        $.get("https://jsonplaceholder.typicode.com/photos", function(obj) {
+                            for(var j = 0; j < totalLength; j++) {
+                                    
+                                if(compare == obj[j].thumbnailUrl){
+                                    var newPost = obj[j].url;
+                                    var full = $("<img src=" + newPost + ">");
+
+                                    full.addClass("content")
+                                    $(".modal-content").html(full);
+                                }
+                            }
+                        });
+                        
+                    });
+
+                    $(".close").click(function(){
+                         $("#myModal").css("display", "none");
+                    });
+
+                    $("#myModal").click(function(event){
+                        $("#myModal").css("display", "none");
+                    });
+                    
+                    console.log(totalLength);
+                    start = start + 15;
+                    less = less - 15;
+                });
+            });
+            
+            
+            
+        });
+        </script>
+    </body>
+</html>

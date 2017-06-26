@@ -78,7 +78,8 @@ li a{
     -o-transition: all 600ms ease-in-out;
 }
 li a:hover{
-    background-color:#BEB9B5;
+    background-color:#FEF6EB;
+    color: #74828F;
     border-radius: 5px;
 }
 #homing{
@@ -97,7 +98,7 @@ li a:hover{
 }
 
 .inside1 {
-    background-color: 81bfb2;
+    background-color: #81bfb2;
     border-radius: 10px;
     width: 60%;
     height: auto;
@@ -111,6 +112,8 @@ li a:hover{
 
 
 #more {
+    font-family: naviFontB;
+    font-size: 12pt;
     margin-top: 20px;
     margin-bottom: 20px;
     padding: 10px;

@@ -1,0 +1,151 @@
+<html>
+    <head>
+        <title>Profile | stumblr</title>
+        <link rel="stylesheet" type="text/css" href="profileStyle.css">
+    </head>
+
+    <body>
+        <nav>
+            <ul id=navLinks>
+                <li><a id="homing" href="index.html">HOME</a></li>
+                <li><a id="photing"href="photos.html">PHOTOS</a></li>
+                <li><a id="albuming"href="album.html">ALBUMS</a></li>
+            </ul>
+        </nav>
+        <div id="middle">
+            <div id="profile">
+            </div>
+            <div id="alposts">
+                <div id="albums">
+                    <div id="gallery"></div>
+                    <button class="more" id="moreAlbums">Load More...</button>
+                </div>
+                <div id="posts">
+                    <div id="individual_posts">
+                    </div>
+                    <button class="more" id="morePosts">Load More...</button>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script>
+            function getUrlVars() {
+                var vars = [], hash;
+                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                for(var i = 0; i < hashes.length; i++) {
+                    hash = hashes[i].split('=');
+                    vars.push(hash[0]);
+                    vars[hash[0]] = hash[1];
+                }
+                return vars;
+            }
+
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            
+            $(document).ready(function() {
+                var id = getUrlVars().id;
+                var user;
+                $.getJSON("https://jsonplaceholder.typicode.com/users/" + id)
+                .done(function(obj) {
+                    user = obj;
+                    console.log(user);
+                    var profile = $('<div class = "posts"><h1>' + user.username + '</h1>' 
+                               + '<h2>' + user.name + '</h2>'
+                               + '<h3>Email Address</h3>' + '<p>' + user.email + '</p>'
+                               + '<h3>Address</h3>' + '<p>' + user.address.street + ' ' 
+                               + user.address.suite + ' ' + user.address.city + ' '
+                               + user.address.zipcode
+                               + '<h3>Phone</h3>' + '</p>' + user.phone
+                               + '<h3>Website</h3>' + '</p>' + user.website
+                               + '<h3>Company</h3>' + '<h4>' + user.company.name + '</h4><p>'
+                               + user.company.catchPhrase + '</p><p>' + user.company.bs + '</p></div>');
+                
+                    $("#profile").html(profile);
+                    
+                    $.getJSON("https://jsonplaceholder.typicode.com/albums?userId=" + user.id)
+                    .done(function(albums_by_user) {
+                        var length = 3; 
+                        for (var i = 1; i < length;) { // Display only 2 albums first initially.
+                            (function() { // i is the album ID
+                                var maxID = i * 50; // Example, if i==1, it's max ID is 50 and min ID is 1
+                                var minID = maxID - 49;
+                                var randomPicURL = "https://jsonplaceholder.typicode.com/photos?albumId=" + i + "&id=" + getRandomInt(minID, maxID);
+                                var currentAlbum = albums_by_user[i-1];
+                                // Ex.: https://jsonplaceholder.typicode.com/photos?albumId=1&id=4
+                                console.log(randomPicURL);
+                                $.getJSON(randomPicURL) // This returns an array of objects?
+                                .done(function(randomPic) {
+                                    console.log(randomPic[0]); // Log the 1st object (only object)
+                                    var album = $('<div><a href="album.html?id=' + currentAlbum.id + '"><img src="' + randomPic[0].thumbnailUrl + '.png"></img><p class="albumTitle">' + currentAlbum.title + '</p></a></div>');
+                                    // Ex.: <div><img src="http://placehold.it/150/d32776.png"></img><p class="albumTitle">non esse culpa molestiae omnis sed optio</p></div>
+                                    $("#gallery").append(album);
+                                });
+                                i+=1;
+                            })(i);
+                        }
+
+                        var j = length;
+                        $("#moreAlbums").click(function() {
+                            if (length < albums_by_user.length - 1)
+                                length+=3;
+                            else
+                                $("#moreAlbums").hide();
+                            for (; j < length;) {
+                                (function() {
+                                    if (j == albums_by_user.length - 1)
+                                        $("#moreAlbums").hide();
+                                    var maxID = j * 50;
+                                    var minID = maxID - 49;
+                                    var randomPicURL = "https://jsonplaceholder.typicode.com/photos?albumId=" + j + "&id=" + getRandomInt(minID, maxID);
+                                    var currentAlbum = albums_by_user[j-1];
+                                    console.log(randomPicURL);
+                                    $.getJSON(randomPicURL)
+                                    .done(function(randomPic) {
+                                        console.log(randomPic[0]);
+                                        var album = $('<div><a href="album.html?id=' + currentAlbum.id + '"><img src="' + randomPic[0].thumbnailUrl + '.png"></img><p class="albumTitle">' + currentAlbum.title + '</p></a></div>');
+                                        $("#gallery").append(album);                                        
+                                    });
+                                    j+=1;
+                                })(j);   
+                            }
+                        });
+
+                    })
+                    .fail(); // Do this if album fetching fails
+
+                    $.getJSON("https://jsonplaceholder.typicode.com/posts?userId=" + user.id)
+                    .done(function(posts_by_user) {
+                        var length = 3;
+                        for (var i = 0; i < length; i++) {
+                            var post = $('<div><h1>' + posts_by_user[i].title + '</h1><p>'
+                                        + posts_by_user[i].body + '</p></div>');
+                            $("#individual_posts").append(post);
+                        }
+                        
+                        var j = length;
+                        $("#morePosts").click(function() {
+                            if (posts_by_user.length - length >= 3)
+                                length+=3;
+                            else {
+                                $("#morePosts").hide();
+                                length+=(posts_by_user.length-length);
+                            }
+                            for (; j < length; j++) {
+                                if (j == posts_by_user.length - 1)
+                                    $("#morePosts").hide();
+                                var post = $('<div><h1>' + posts_by_user[j].title + '</h1><p>'
+                                    + posts_by_user[j].body + '</p></div>');
+                                $("#individual_posts").append(post);
+                                
+                            }
+                        });
+                    })
+                    .fail(); // Do this if post fetching fails
+                })
+                .fail(); // Do this if user fetching fails
+            });
+        </script>
+    </body>
+</html>
