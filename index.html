@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>Home | stumblr</title>
+        <link rel="stylesheet" type="text/css" href="indexStyle.css">
+    </head>
+
+    <body>
+        <nav>
+            <ul id=navLinks>
+                <li><a href="index.html" id="homing">HOME</a></li>
+                <li><a href="photos.html">PHOTOS</a></li>
+            </ul>
+        </nav>
+        <div id="middle">
+            <div id="posts">
+            </div>
+            <button id="more">Load More...</button>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script>
+        
+        var users = [];
+        var start = 0;
+        var end = 90;
+        $(document).ready(function() {
+            $.getJSON("https://jsonplaceholder.typicode.com/users")
+            .done(function(obj) {
+                for(var i = 0; i < obj.length; i++) {
+                    users.push(obj[i]);
+                }
+            });
+           
+            if (start == 0){
+                $.getJSON("https://jsonplaceholder.typicode.com/posts")
+                .done(function(obj) {
+                        var totalLength = obj.length - end;
+                        for(var j = start; j < totalLength; j++) {
+                            var userID = parseInt(obj[j].userId) - 1;
+                            var post = $("<div><h1>" + obj[j].title + '</h1><h4>Written by: <a href="profile.html?id='
+                                        + users[userID].id + '">' 
+                                        + users[userID].username 
+                                        + "</a></h4><p>" + obj[j].body + "</p></div>");
+                            post.addClass("inside1");
+                            $("#posts").append(post);
+                        }
+
+                        console.log(totalLength);
+                        start = start + 10;
+                        end = end - 10;
+                })
+                .fail(function() {
+                    var errorMessage = $("<div><p>Sorry! We could not load the data at the moment.</p></div>");
+                    $("#posts").html(errorMessage);
+                });
+            }
+           
+            $("#more").click(function(){
+                    $.get("https://jsonplaceholder.typicode.com/posts", function(obj) {
+                    var totalLength = obj.length - end;
+                    for(var j = start; j < totalLength; j++) {
+                        if (j == obj.length - 1)
+                            $("#more").hide();
+                        var userID = parseInt(obj[j].userId) - 1;
+                        var post = $("<div><h1>" + obj[j].title + '</h1><h4>Written by: <a href="profile.html?id='
+                                     + users[userID].id + '">' 
+                                     + users[userID].username 
+                                     + "</a></h4><p>" + obj[j].body + "</p></div>");
+                        post.addClass("inside1");
+                        $("#posts").append(post);
+                    }
+
+                    console.log(totalLength);
+                    start = start + 10;
+                    end = end - 10;
+                });
+            });
+        });
+    </script>
+    </body>
+</html>
